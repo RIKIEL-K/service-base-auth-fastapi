@@ -11,6 +11,8 @@ dependencies = [
     "aioshutil>=1.5",
     "alembic>=1.15.2",
     "asyncpg>=0.30.0",
+    "aiomysql>=0.2.0",
+    "pymysql>=1.1.0",
     "backports-cached-property>=1.0.2",
     "boto3>=1.38.3",
     "colorama>=0.4.6",
@@ -45,6 +47,7 @@ dependencies = [
     "ulid-py>=1.1.0",
     "uvicorn>=0.34.2",
     "websockets>=15.0.1",
+    "sendria>=2.2.2",
 ]
 
 [tool.setuptools]

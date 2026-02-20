@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Service Base FastAPI"
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        "postgresql+asyncpg://postgres:postgres@db:5432/service_base_dev",
+        "mysql+aiomysql://root:@localhost:3306/auth_service",
     )
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://127.0.0.1:5173")
     BACKEND_API_V1_URL: str = os.getenv(

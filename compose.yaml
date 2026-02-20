@@ -1,44 +1,8 @@
 services:
-  db:
-    image: postgres:17
-    container_name: service-base-db
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - service-base_default
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: service-base-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SESSION_EXPIRATION_TIME: 43200
-      PGADMIN_CONFIG_MAX_SESSION_IDLE_TIME: 43200
-      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
-    networks:
-      - service-base_default
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-
   web:
     build: .
     container_name: service-base-web
-    command: >
-      bash -c "uv venv &&
-      uv pip install . &&
-      uv pip install --group dev &&
-      source .venv/bin/activate &&
-      uvicorn main:app --reload --host 0.0.0.0 --port 8000"
+    command: uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
     env_file:
       - .env
     volumes:
@@ -47,8 +11,9 @@ services:
       - "8000:8000" # for fastapi
       - "8888:8888" # for jupyter notebook when debugging
     depends_on:
-      - db
       - minio
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - service-base_default
 
@@ -73,12 +38,7 @@ services:
     depends_on:
       - minio
     entrypoint: >
-      sh -c "
-      sleep 5 &&
-      mc alias set local http://service-base-minio:9000 admin password &&
-      mc mb local/fastapi-app-dev &&
-      mc mb local/fastapi-app-test
-      "
+      sh -c " sleep 5 && mc alias set local http://service-base-minio:9000 admin password && mc mb --ignore-existing local/fastapi-app-dev && mc mb --ignore-existing local/fastapi-app-test "
     networks:
       - service-base_default
 
@@ -100,10 +60,9 @@ services:
       - service-base_default
 
 volumes:
-  postgres_data:
   minio-volume:
-  pgadmin-data:
+
 
 networks:
   service-base_default:
-    external: true
+    driver: bridge

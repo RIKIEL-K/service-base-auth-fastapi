@@ -25,7 +25,7 @@ def upgrade() -> None:
     op.create_table(
         "oauth_accounts",
         sa.Column("id", sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column("user_id", sa.Uuid(), nullable=False),
+        sa.Column("user_id", sa.String(length=36), nullable=False),
         sa.Column("oauth_name", sa.String(length=100), nullable=False),
         sa.Column("access_token", sa.String(length=1024), nullable=False),
         sa.Column("expires_at", sa.Integer(), nullable=True),

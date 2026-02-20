@@ -18,7 +18,12 @@ from app.models import User
 
 load_dotenv()
 
-sync_url = settings.DATABASE_URL.replace("+asyncpg", "")
+sync_url = (
+    settings.DATABASE_URL
+    .replace("+asyncpg", "")
+    .replace("+aiomysql", "+pymysql")
+)
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
